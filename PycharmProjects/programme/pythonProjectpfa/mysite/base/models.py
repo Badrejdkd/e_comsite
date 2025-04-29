@@ -8,6 +8,7 @@ class Compagnie(models.Model):
     adresse = models.CharField(max_length=255)
     telephone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True)
+    image = models.ImageField(upload_to='compagnie/', null=True, blank=True)
 
     def __str__(self):
         return self.nom

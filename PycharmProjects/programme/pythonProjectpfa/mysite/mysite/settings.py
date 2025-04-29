@@ -81,6 +81,14 @@ DATABASES = {
         'PASSWORD': '',  # Default WampServer MySQL password is empty
         'HOST': '127.0.0.1',  # Or 'localhost'
         'PORT': '3306',  # Default MySQL port in WampServer
+    },
+    'powerbi': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'gestionentreprise',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
