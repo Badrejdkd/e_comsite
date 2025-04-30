@@ -11,6 +11,12 @@
                 <p class="lead text-muted">Une sélection de produits haut de gamme à des prix compétitifs</p>
             </div>
         </div>
+        <form method="get" action="" class="mb-5">
+    <div class="input-group w-50 mx-auto">
+        <input type="text" name="q" class="form-control" placeholder="Rechercher un produit..." value="{{ query|default_if_none:'' }}">
+        <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+    </div>
+</form>
 
         <div class="row">
             {% for product in products %}

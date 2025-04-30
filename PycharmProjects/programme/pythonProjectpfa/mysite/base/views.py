@@ -12,6 +12,61 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from .form import CustomLoginForm
 from django.contrib import messages
+from django.views import View
+from django.shortcuts import render
+from django.views import View
+from django.shortcuts import render, redirect
+from .form import ClientForm
+from .models import Client, Commande, Compagnie, Produit
+
+class PanierView(View):
+    def get(self, request):
+        panier = request.session.get('panier', [])
+        return render(request, 'panier.html', {'panier': panier})
+
+from django.shortcuts import render, redirect
+from django.views import View
+from .models import Produit, Commande, Client
+from .form import ClientForm
+
+class CommanderView(View):
+    def get(self, request, produit_id):
+        form = ClientForm()  # Initialiser le formulaire du client
+        try:
+            produit = Produit.objects.get(id=produit_id)  # Récupérer le produit
+        except Produit.DoesNotExist:
+            return redirect('product_list')  # Rediriger si le produit n'existe pas
+
+        return render(request, 'client_form.html', {'form': form, 'produit': produit})
+
+    def post(self, request, produit_id):
+        form = ClientForm(request.POST)
+        try:
+            produit = Produit.objects.get(id=produit_id)  # Récupérer le produit
+        except Produit.DoesNotExist:
+            return redirect('product_list')  # Rediriger si le produit n'existe pas
+
+        if form.is_valid():
+            client = form.save()  # Sauvegarder le client
+            commande = Commande.objects.create(
+                client=client,
+                compagnie=produit.compagnie,
+                statut='En cours'
+            )
+            # Ajouter la commande dans le panier de la session
+            panier = request.session.get('panier', [])
+            panier.append({
+                'commande_id': commande.id,
+                'produit_id': produit.id,
+                'produit_nom': produit.nom,
+                'prix': float(produit.prix)
+            })
+            request.session['panier'] = panier  # Sauvegarder le panier dans la session
+            return redirect('panier')  # Rediriger vers la vue du panier
+
+        # Si le formulaire n'est pas valide, réafficher le formulaire
+        return render(request, 'client_form.html', {'form': form, 'produit': produit})
+
 
 def custom_login_view(request):
     if request.method == 'POST':
@@ -45,10 +100,20 @@ def register(request):
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
+
 class Productlist(View):
-    def get(self,request):
-        products = Produit.objects.all()
-        return render(request,'ListProduit.html',{'products':products})
+    def get(self, request):
+        query = request.GET.get('q')
+        if query:
+            products = Produit.objects.filter(nom__icontains=query)
+        else:
+            products = Produit.objects.all()
+        return render(request, 'ListProduit.html', {'products': products, 'query': query})
+
+class contact(View):
+    def get(self, request):
+        return render(request, 'contact.html')
+
 
 class PowerBIView(View):
     def get(self, request):

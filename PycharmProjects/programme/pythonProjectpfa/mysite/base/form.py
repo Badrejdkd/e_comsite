@@ -2,6 +2,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+
+from django import forms
+from .models import Client
+
+class ClientForm(forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = ['nom', 'prenom', 'adresse', 'telephone', 'email']
+
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
